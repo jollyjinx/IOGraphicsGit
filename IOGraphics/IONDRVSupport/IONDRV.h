@@ -137,7 +137,6 @@ private:
     void * 			pcInst;
     struct IOTVector *		fDoDriverIO;
     struct DriverDescription *	theDriverDesc;
-    char			fName[64];
 
 public:
     static IONDRV * instantiate( IORegistryEntry * regEntry,

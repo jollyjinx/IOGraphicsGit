@@ -38,6 +38,7 @@
 #include <IOKit/ndrvsupport/IOMacOSVideo.h>
 #include <IOKit/ndrvsupport/IONDRVSupport.h>
 
+
 #define kIONDRVDisableKey	"AAPL,disable-ndrv"
 
 class IONDRVFramebuffer : public IOFramebuffer
@@ -94,17 +95,13 @@ protected:
     unsigned int		avJackState:1;
     unsigned int		grayMode:1;
     unsigned int		platformSleep:1;
-    unsigned int		__reservedG:1;
-    unsigned int		supportsProbe:1;
-    unsigned int		__reservedB:25;
+    unsigned int		__reservedB:27;
 
     IOService *			device;
 
-    UInt32			__reservedA[29];
+    UInt32			__reservedA[30];
 
 private:
-    struct IONDRVFramebufferPrivate * __private;
-
     OSMetaClassDeclareReservedUnused(IONDRVFramebuffer, 0);
     OSMetaClassDeclareReservedUnused(IONDRVFramebuffer, 1);
     OSMetaClassDeclareReservedUnused(IONDRVFramebuffer, 2);
@@ -166,14 +163,8 @@ private:
     void displayI2CPower( bool enable );
     IOReturn ndrvSetPowerState( UInt32 newState );
     static IOReturn _probeAction( IONDRVFramebuffer * self, IOOptionBits options );
-    IOReturn mirrorInfo( UInt32 index );
     friend class IONDRVI2CInterface;
     static IOReturn _iicAction( IONDRVFramebuffer * self, VDCommunicationRec * comm );
-    bool searchOfflineMode( IODisplayModeID * offlineMode );
-    IOReturn processConnectChange( UInt32 * value );
-    IOReturn setMirror( IONDRVFramebuffer * other );
-    IOReturn setConnectionFlags( void );
-    bool getOnlineState( void );
 
 public:
     virtual IOReturn doControl( UInt32 code, void * params );

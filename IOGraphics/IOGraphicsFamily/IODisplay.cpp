@@ -36,7 +36,6 @@
 #include <IOKit/graphics/IOGraphicsTypes.h>
 #include <IOKit/IOPlatformExpert.h>
 #include <IOKit/IODeviceTreeSupport.h>
-#include <IOKit/IOKitKeys.h>
 #include <IOKit/IOLib.h>
 #include <IOKit/assert.h>
 
@@ -67,7 +66,7 @@ const OSSymbol * gIODisplayParametersCommitKey;
 const OSSymbol * gIODisplayParametersDefaultKey;
 
 enum {
-    kIODisplayMaxUsableState  = kIODisplayMaxPowerState - 1
+    kIODisplayMaxUsableState  = kIODisplayMaxPowerState
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -646,8 +645,8 @@ static IOPMPowerState ourPowerStates[kIODisplayNumPowerStates] = {
   // version,
   // capabilityFlags, outputPowerCharacter, inputPowerRequirement,
   { 1, 0,                                     0, 0,           0,0,0,0,0,0,0,0 },
-  { 1, 0,                                     0, 0,           0,0,0,0,0,0,0,0 },
-  { 1, IOPMDeviceUsable,                      0, IOPMPowerOn, 0,0,0,0,0,0,0,0 },
+  { 1, 0,                                     0, IOPMPowerOn, 0,0,0,0,0,0,0,0 },
+  { 1, 0,                                     0, IOPMPowerOn, 0,0,0,0,0,0,0,0 },
   { 1, IOPMDeviceUsable | IOPMMaxPerformance, 0, IOPMPowerOn, 0,0,0,0,0,0,0,0 }
   // staticPower, unbudgetedPower, powerToAttain, timeToAttain, settleUpTime, 
   // timeToLower, settleDownTime, powerDomainBudget
