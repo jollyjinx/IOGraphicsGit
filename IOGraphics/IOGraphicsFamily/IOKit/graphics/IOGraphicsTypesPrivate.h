@@ -130,6 +130,12 @@ enum {
 #define kIOGraphicsPrefsParametersKey   "IOGraphicsPrefsParameters"
 #define kIOGraphicsIgnoreParametersKey  "IOGraphicsIgnoreParameters"
 
+#define kIOGraphicsPrefsVersionKey      "version"
+enum 
+{
+    kIOGraphicsPrefsCurrentVersion 	= 2
+};
+
 #define kIODisplayFastBootEDIDKey       "nv-edid"
 
 #define kIOFBBuiltInKey                 "built-in"
@@ -151,15 +157,15 @@ enum {
 };
 
 #ifndef kIOFBLowPowerAggressiveness
-#define kIOFBLowPowerAggressiveness     iokit_family_err(sub_iokit_graphics, 1)
+#define kIOFBLowPowerAggressiveness     ((uint32_t) iokit_family_err(sub_iokit_graphics, 1))
 #endif
 
 #ifndef kIOFBCaptureAggressiveness
-#define kIOFBCaptureAggressiveness      iokit_family_err(sub_iokit_graphics, 2)
+#define kIOFBCaptureAggressiveness      ((uint32_t) iokit_family_err(sub_iokit_graphics, 2))
 #endif
 
 #ifndef kIODisplayDimAggressiveness
-#define kIODisplayDimAggressiveness     iokit_family_err(sub_iokit_graphics, 3)
+#define kIODisplayDimAggressiveness     ((uint32_t) iokit_family_err(sub_iokit_graphics, 3))
 #endif
 
 #define kIOFBMessageConnectChange       iokit_family_err(sub_iokit_graphics, 100)
@@ -231,6 +237,13 @@ enum
 //  kIOMirrorHint          = 0x00010000,
 };
 
+// values for displayOnline options
+
+enum
+{
+	kIODisplayOptionBacklight  = 0x00000001,
+	kIODisplayOptionDimDisable = 0x00000002
+};
 
 #endif /* ! _IOKIT_IOGRAPHICSTYPESPRIVATE_H */
 

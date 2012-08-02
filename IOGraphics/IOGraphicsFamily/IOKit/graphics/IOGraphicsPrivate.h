@@ -37,23 +37,12 @@ do {                                    \
     UInt64          nano;               \
     AbsoluteTime_to_scalar(&now) = mach_absolute_time();                \
     absolutetime_to_nanoseconds(now, &nano);                            \
-    kprintf("%08d [%s]::", (uint32_t) (nano / 1000000ULL), name);         \
-    kprintf("%s", __FUNCTION__);        \
-    kprintf(fmt, ## args);              \
-} while( false )
-
-#elif 0
-#warning **LOGS**
-#define RLOG 1
-#define DEBG(name, fmt, args...)         \
-do {                                    \
-    AbsoluteTime    now;                \
-    UInt64          nano;               \
-    AbsoluteTime_to_scalar(&now) = mach_absolute_time();                \
-    absolutetime_to_nanoseconds( now, &nano );                          \
     IOLog("%08d [%s]::", (uint32_t) (nano / 1000000ULL), name);           \
     IOLog("%s", __FUNCTION__);          \
     IOLog(fmt, ## args);                \
+    kprintf("%08d [%s]::", (uint32_t) (nano / 1000000ULL), name);         \
+    kprintf("%s", __FUNCTION__);        \
+    kprintf(fmt, ## args);              \
 } while( false )
 
 #else
@@ -119,6 +108,18 @@ do {                                    \
 #define kIOUserClientSharedInstanceKey  "IOUserClientSharedInstance"
 #endif
 
+#ifndef kIOHibernateOptionsKey
+#define kIOHibernateOptionsKey      "IOHibernateOptions"
+#endif
+
+#ifndef kIOHibernateGfxStatusKey
+#define kIOHibernateGfxStatusKey    "IOHibernateGfxStatus"
+#endif
+
+#ifndef kIOMessageSystemPagingOff
+#define kIOMessageSystemPagingOff       iokit_common_msg(0x255)
+#endif
+
 extern "C" ppnum_t pmap_find_phys(pmap_t map, addr64_t va);
 
 extern "C" vm_map_t IOPageableMapForAddress( vm_address_t address );
@@ -152,6 +153,7 @@ enum
 	kIOGDbgLidOpen     = 0x00000001,
 	kIOGDbgVBLThrottle = 0x00000002,
 	kIOGDbgK59Mode     = 0x00000004,
+	kIOGDbgDumbPanic   = 0x00000008,
 };
 
 #endif /* ! _IOKIT_IOGRAPHICSPRIVATE_H */
