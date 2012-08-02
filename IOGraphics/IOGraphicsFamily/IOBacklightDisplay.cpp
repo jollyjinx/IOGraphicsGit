@@ -24,6 +24,7 @@
 #include <IOKit/IOUserClient.h>
 
 #define IOFRAMEBUFFER_PRIVATE
+#include <IOKit/IOHibernatePrivate.h>
 #include <IOKit/graphics/IOGraphicsPrivate.h>
 #include <IOKit/graphics/IODisplay.h>
 #include <IOKit/ndrvsupport/IOMacOSVideo.h>
@@ -86,6 +87,7 @@ protected:
     IOInterruptEventSource * fDeferredEvents;
     uint8_t                  fClamshellSlept;
 	uint8_t					 fDisplayDims;
+	uint8_t					 fProviderPower;
 
 public:
 
@@ -176,6 +178,7 @@ bool AppleBacklightDisplay::start( IOService * provider )
     if (!super::start(provider))
         return (false);
 
+	fClamshellSlept = gIOFBCurrentClamshellState;
     fDeferredEvents = IOInterruptEventSource::interruptEventSource(this, _deferredEvent);
     if (fDeferredEvents)
         getConnection()->getFramebuffer()->getControllerWorkLoop()->addEventSource(fDeferredEvents);
@@ -292,13 +295,14 @@ IOReturn AppleBacklightDisplay::setPowerState( unsigned long powerState, IOServi
 
     framebuffer->fbLock();
 
-    if (isInactive())
+    if (isInactive() || (fCurrentPowerState == powerState))
     {
         framebuffer->fbUnlock();
         return (IOPMAckImplied);
     }
 
     fCurrentPowerState = powerState;
+	if (fCurrentPowerState) fProviderPower = true;
 
 	OSObject * obj;
 	if ((!powerState) && (obj = copyProperty(kIOHibernatePreviewActiveKey, gIOServicePlane)))
@@ -309,6 +313,8 @@ IOReturn AppleBacklightDisplay::setPowerState( unsigned long powerState, IOServi
 	{
 		updatePowerParam();
 	}
+
+	if (!fCurrentPowerState) fProviderPower = false;
 
     framebuffer->fbUnlock();
 
@@ -426,9 +432,10 @@ bool AppleBacklightDisplay::updatePowerParam(void)
         OSReportWithBacktrace("AppleBacklightDisplay::updatePowerParam !inGate\n");
 #endif
 
+	if (!fProviderPower) return (false);
+
     displayParams = OSDynamicCast(OSDictionary, copyProperty(gIODisplayParametersKey));
-    if (!displayParams)
-        return (false);
+    if (!displayParams) return (false);
 
 	value = fClamshellSlept ? 0 : fCurrentPowerState;
 
@@ -474,6 +481,7 @@ bool AppleBacklightDisplay::updatePowerParam(void)
 				value = kIODisplayPowerStateOn;
 				break;
 		}
+//		kprintf("dysp %d, %d, %d\n", value, fClamshellSlept, fCurrentPowerState);
 		ret = super::doIntegerSet(displayParams, gIODisplayPowerStateKey, value);
 	}
 
@@ -497,6 +505,7 @@ IOReturn AppleBacklightDisplay::framebufferEvent( IOFramebuffer * framebuffer,
 {
     if ((kIOFBNotifyDidWake == event) && (info))
     {
+	    fProviderPower = true;
 		fCurrentPowerState = kIODisplayMaxPowerState;
 		updatePowerParam();
     }
